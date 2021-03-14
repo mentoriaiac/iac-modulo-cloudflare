@@ -24,12 +24,12 @@ Está como todo do projeto o modulo cirar a zona para teste, porém o mesmo est�
 ## Como utilizar o modulo
 
 ```hcl
-module "cloudflare_record_cname" {
-  source  = "path_module/"
-  zone_id = data.cloudflare_zones.example.zones[0].id
-  name    = var.name
-  value   = var.value
-  type    = "CNAME"
+module "cloudflare_record_example" {
+  source  = "git@github.com:mentoriaiac/iac-modulo-cloudflare.git?ref=v0.1"
+  zone_id = var.cloudflare_zone_id
+  name    = "example"
+  value   = "192.168.1.1"
+  type    = "A"
 }
 ```
 
