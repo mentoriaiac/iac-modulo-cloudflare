@@ -1,6 +1,6 @@
 # IAC-MODULO-CLOUDFLARE
 
-Modulo terraform para criar um registro dns em um site na [cloudflare.com](cloudflare.com).
+Modulo terraform para criar um registro dns em um site(zona) na [cloudflare.com](cloudflare.com).
 
 ## Requerimentos
 
@@ -12,14 +12,21 @@ Modulo terraform para criar um registro dns em um site na [cloudflare.com](cloud
   * Zona.Zona = editar
   * Zona.DNS = editar
 
-### Site(Zona) criado
+![privilegios-token-cloudflare](img/privilegios-token-cloudflare.png)
+
+### Site(Zona)
 
 Para testar o modulo é necessário ter uma zona criada.
-Está como todo do projeto o modulo cirar a zona para teste, porém o mesmo está com erro.
+Está como _TODO_ do projeto, o modulo cirar a zona para teste, porém a ação de criar a zona com terraform mesmo está retornando com erro.
 
 ### [Variaveis de ambiente](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs#argument-reference)
 
+Para utilizar o modulo é necessário ter o token setado no ambiente.
+Pode-se utilizar a variaivel de ambiente CLOUDFLARE_API_TOKEN ou CLOUDFLARE_EMAIL + CLOUDFLARE_API_KEY
+
 * CLOUDFLARE_API_TOKEN = [API-TOKEN](https://dash.cloudflare.com/profile/api-tokens)
+
+Referência [registry.terraform.io/providers/cloudflare](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs)
 
 ## Como utilizar o modulo
 
@@ -32,6 +39,23 @@ module "cloudflare_record_example" {
   type    = "A"
 }
 ```
+
+Outros exemplos no [main.tf](test/main.tf) do diretório de test.
+
+## Variaveis
+
+| Variable | Type                                                                                                                                                                    | Default |  Mandatory | Comment                                                                                                                                  |
+|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| zone_id  | string                                                                                                                                                                  |         | [x]        | Zone id for record.                                                                                                                      |
+| name     | string                                                                                                                                                                  |         | [x]        | The name of the record.                                                                                                                  |
+| value    | string                                                                                                                                                                  | null    |            | The (string) value of the record. Either this or data must be specified.                                                                 |
+| type     | string                                                                                                                                                                  | A       |            | The type of the record.                                                                                                                  |
+| ttl      | number                                                                                                                                                                  | 300     |            | The TTL of the record (default: '300').                                                                                                  |
+| proxied  | bool                                                                                                                                                                    | false   |            | Whether the record gets Cloudflare's origin protection; defaults to false.                                                               |
+| data     | object({     service  = string     proto    = string     name     = string     priority = number     weight   = number     port     = number     target   = string   }) | null    |            | Map of attributes that constitute the record value. Primarily used for LOC and SRV record types. Either this or value must be specified. |
+| priority | number                                                                                                                                                                  | null    |            | The priority of the record.                                                                                                              |
+|          |                                                                                                                                                                         |         |            |                                                                                                                                          |
+|          |                                                                                                                                                                         |         |            |                                                                                                                                          |
 
 ## Teste do modulo
 
@@ -46,6 +70,7 @@ module "cloudflare_record_example" {
 * CLOUDFLARE_ZONE_NAME
 * CLOUDFLARE_API_TOKEN
 
+O CLOUDFLARE_ZONE_NAME é necessário porque ele será usado para criar os registros na cloudflare.
 Exemplo de CLOUDFLARE_ZONE_NAME = *example.com*
 
 ### execução do teste
@@ -56,34 +81,10 @@ make test
 
 ## TODO
 
-### Implementação do parametro data do resource
-
-O recurso tem o parametro data para outras propriedades. [link](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record#example-usage)
-
-```hcl
-# Add a record requiring a data map
-resource "cloudflare_record" "_sip_tls" {
-  zone_id = var.cloudflare_zone_id
-  name    = "_sip._tls"
-  type    = "SRV"
-
-  data = {
-    service  = "_sip"
-    proto    = "_tls"
-    name     = "terraform-srv"
-    priority = 0
-    weight   = 0
-    port     = 443
-    target   = "example.com"
-  }
-}
-```
-
-### Implementação de peso de registros 
-
-É o item *priority* do resource.
-
 ### Casos de teste
+
+É necessário implementar novos testes com outros tipos de record que não implementados ainda.
+O objetivo é validar a implementação e exemplificar a criação dos outros tipos de registros.
 
 ### CI
 
