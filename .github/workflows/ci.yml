@@ -1,0 +1,11 @@
+name: "Terraform Valida Modulo"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  terraform:
+      uses: "mentoriaiac/cicd_centralizado/.github/workflows/terraform_valida_modulo.yaml@v0.1.0"
+      secrets:
+        token: ${{ secrets.TOKEN }}
